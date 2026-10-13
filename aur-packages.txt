@@ -1,0 +1,9 @@
+# Packages built into the local `repo` pacman repository (one per line).
+# Built by scripts/build-aur-repo.sh from the latest AUR PKGBUILD, unless
+# packages/<name>/PKGBUILD exists, which then takes precedence.
+intel-mlc
+mbw
+mstflint
+nvidia-mft
+storcli
+y-cruncher

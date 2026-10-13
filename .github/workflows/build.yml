@@ -1,0 +1,71 @@
+name: Build ISO
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # weekly, Monday 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  repo:
+    name: Build AUR packages
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    steps:
+      - name: Install tooling
+        run: pacman -Syu --noconfirm --needed git sudo
+
+      - uses: actions/checkout@v7
+
+      - name: Build latest AUR packages into repo/
+        run: scripts/build-aur-repo.sh repo
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: aur-repo
+          path: repo/
+          retention-days: 1
+          if-no-files-found: error
+
+  iso:
+    name: Build ${{ matrix.profile }}
+    needs: repo
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [glucy2-standard, glucy2-gpu]
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache /usr/local/share/boost
+          sudo docker system prune --all --force
+          df -h /
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: aur-repo
+          path: repo/
+
+      # The profiles' pacman.conf hardcodes file:///home/glucy2/Documents/archiso/repo,
+      # so the project is mounted at that path inside the container.
+      - name: Build ISO
+        run: |
+          mkdir -p out
+          sudo docker run --rm --privileged \
+            -v "$PWD:/home/glucy2/Documents/archiso" \
+            archlinux:latest \
+            /home/glucy2/Documents/archiso/scripts/build-iso.sh "${{ matrix.profile }}"
+
+      - name: Checksum
+        working-directory: out
+        run: sha256sum *.iso | tee SHA256SUMS
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.profile }}
+          path: out/
+          compression-level: 0
+          retention-days: 14
+          if-no-files-found: error
