@@ -16,7 +16,7 @@ Custom Arch Linux live ISO profiles, built automatically by GitHub Actions.
 
 ## CI
 
-`.github/workflows/build.yml` runs every Monday 03:00 UTC and on manual dispatch (`workflow_dispatch`).
+`.github/workflows/build.yml` runs every Monday 03:00 UTC, on every push to `main`/`master`, and on manual dispatch (`workflow_dispatch`).
 
 1. `repo` job: builds every package in `aur-packages.txt` (latest AUR PKGBUILD, or `packages/<name>/PKGBUILD` if present) and uploads `repo/` as an artifact.
 2. `iso` job (matrix: both profiles): downloads the repo artifact, runs `scripts/build-iso.sh <profile>` in a privileged Arch container, and uploads the ISO plus `SHA256SUMS` as an artifact (14 days).
