@@ -7,3 +7,4 @@ mstflint
 nvidia-mft
 storcli
 y-cruncher
+xmtr-bin

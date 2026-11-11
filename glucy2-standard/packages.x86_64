@@ -12,6 +12,8 @@ hwdata
 fwupd
 libdrm
 mstflint
+nvidia-mft
+fwupd
 
 mkinitcpio
 mkinitcpio-archiso
@@ -76,9 +78,8 @@ nmap
 networkmanager
 ethtool
 iperf3
-muparser
-mstflint
-nvidia-mft
+nexttrace
+xmtr-bin
 
 procps-ng
 
