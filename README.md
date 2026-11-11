@@ -25,7 +25,7 @@ The profiles' `pacman.conf` points `[repo]` at `file:///home/glucy2/Documents/ar
 
 ## Packages
 
-Add a package name to `aur-packages.txt`. To use your own PKGBUILD instead of the AUR one, put it (with any `.install`/patch files) in `packages/<name>/`. Currently `intel-mlc` is custom, to track Intel's download URL and version.
+Add a package name to `aur-packages.txt`. To use your own PKGBUILD instead of the AUR one, put it (with any `.install`/patch files) in `packages/<name>/`.
 
 Limitation: only official-repo dependencies are resolved; AUR dependencies of AUR packages are not built.
 
