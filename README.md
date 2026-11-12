@@ -14,6 +14,9 @@ Custom Arch Linux live ISO profiles, built automatically by GitHub Actions.
 | `scripts/build-iso.sh` | Builds one profile with `mkarchiso` inside an Arch container |
 | `.github/workflows/build.yml` | CI workflow |
 
+## Downloads
+Go to [Actions](https://github.com/Glucy-2/archiso/actions/workflows/build.yml) page for downloading
+
 ## CI
 
 `.github/workflows/build.yml` runs every Monday 03:00 UTC, on every push to `main`/`master`, and on manual dispatch (`workflow_dispatch`).
