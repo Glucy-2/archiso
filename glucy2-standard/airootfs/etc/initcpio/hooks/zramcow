@@ -1,0 +1,29 @@
+#!/usr/bin/ash
+
+run_hook() {
+    local size comp mem_kb
+
+    [ "$(getarg 'cow_device')" = "/dev/zram0" ] || return 0
+
+    size="$(getarg 'zram_cow_size' '70%')"
+    comp="$(getarg 'zram_cow_comp' 'zstd')"
+
+    modprobe zram num_devices=1 || { echo "ERROR: zramcow: cannot load zram module"; return 1; }
+
+    case "${size}" in
+        *%)
+            mem_kb="$(awk '$1 == "MemTotal:" { print $2 }' /proc/meminfo)"
+            size=$((mem_kb * 1024 / 100 * ${size%\%}))
+            ;;
+    esac
+
+    echo "${comp}" > /sys/block/zram0/comp_algorithm 2>/dev/null ||
+        echo "zramcow: compression '${comp}' unavailable, using kernel default"
+    echo "${size}" > /sys/block/zram0/disksize || { echo "ERROR: zramcow: cannot set zram disksize to '${size}'"; return 1; }
+
+    msg ":: Formatting /dev/zram0 (ext4, comp=${comp}, disksize=${size})"
+    mke2fs -q -t ext4 -m 0 -O ^has_journal -L cowspace /dev/zram0 ||
+        echo "ERROR: zramcow: mke2fs failed on /dev/zram0"
+}
+
+# vim: set ft=sh:

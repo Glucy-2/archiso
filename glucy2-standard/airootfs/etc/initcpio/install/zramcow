@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+build() {
+    add_module "zram"
+    add_binary "mke2fs"
+    add_runscript
+}
+
+help() {
+    cat <<HELPEOF
+Creates a zram block device and formats it as ext4 so archiso can use it as
+the writable (cow) layer instead of a plain tmpfs. Active only when booted
+with cow_device=/dev/zram0.
+
+Kernel parameters:
+  zram_cow_size=50%   zram disksize: percentage of MemTotal or a size (e.g. 4G)
+  zram_cow_comp=zstd  zram compression algorithm
+HELPEOF
+}
