@@ -102,6 +102,13 @@ def main():
             reason = (FAIL_PATTERNS + ["QEMU exited", "timeout"])[idx - 1]
             raise RuntimeError(f"waiting for {pattern!r}: {reason}")
 
+        def shell(command, pattern, timeout=60):
+            # Readline enables bracketed paste when it starts reading a line. Typing
+            # earlier is lost: fastfetch in the motd drains the tty while probing it.
+            wait(re.escape("\x1b[?2004h"), timeout)
+            child.sendline(command)
+            wait(pattern, timeout)
+
         try:
             wait(r"Formatting /dev/zram0")
             wait(r"Device '/dev/zram0' mounted successfully")
@@ -110,20 +117,23 @@ def main():
             wait(r"Password: ", 60)
             child.sendline("live")
             wait(r"Kernel:", 120)  # fastfetch output from /etc/profile.d/motd.sh
-            child.sendline(
+            shell(
                 'echo "ZRAM_COW=$(findmnt -no SOURCE,FSTYPE /run/archiso/cowspace)'
-                ' ROOT=$(findmnt -no FSTYPE /)"'
+                ' ROOT=$(findmnt -no FSTYPE /)"',
+                r"ZRAM_COW=/dev/zram0 ext4 ROOT=overlay",
             )
-            wait(r"ZRAM_COW=/dev/zram0 ext4 ROOT=overlay", 60)
-            child.sendline('echo "ZRAM_COMP=$(cat /sys/block/zram0/comp_algorithm)"')
-            wait(r"ZRAM_COMP=[^$\r\n]+", 60)
+            shell('echo "ZRAM_COMP=$(cat /sys/block/zram0/comp_algorithm)"', r"ZRAM_COMP=[^$\r\n]+")
             print(child.after.strip(), flush=True)
             # Informational only: failed units are reported, not treated as test failures.
-            child.sendline("systemctl --failed --no-legend --plain | sed 's/^/FAILED_UNIT: /'; echo UNITS_DONE_$((6*7))")
-            wait(r"UNITS_DONE_42", 60)
+            shell(
+                "systemctl --failed --no-legend --plain | sed 's/^/FAILED_UNIT: /'; echo UNITS_DONE_$((6*7))",
+                r"UNITS_DONE_42",
+            )
             for unit in re.findall(r"FAILED_UNIT: \S+\.\w+", child.before):
                 print(unit, flush=True)
-            child.sendline("poweroff")
+            # live is not root and a serial login is not an active seat: polkit would refuse plain poweroff.
+            wait(re.escape("\x1b[?2004h"), 60)
+            child.sendline("sudo poweroff")
             child.expect(pexpect.EOF, timeout=180)
         except RuntimeError as e:
             log.flush()
