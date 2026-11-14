@@ -103,8 +103,7 @@ def main():
             raise RuntimeError(f"waiting for {pattern!r}: {reason}")
 
         def shell(command, pattern, timeout=60):
-            # Readline enables bracketed paste when it starts reading a line. Typing
-            # earlier is lost: fastfetch in the motd drains the tty while probing it.
+            # Readline enables bracketed paste when it starts reading a line; type only then.
             wait(re.escape("\x1b[?2004h"), timeout)
             child.sendline(command)
             wait(pattern, timeout)
@@ -116,7 +115,8 @@ def main():
             child.sendline("live")
             wait(r"Password: ", 60)
             child.sendline("live")
-            wait(r"Kernel:", 120)  # fastfetch output from /etc/profile.d/motd.sh
+            # fastfetch output from /etc/profile.d/motd.sh; labels are colored ("Kernel\e[m: ").
+            wait(r"Kernel(?:\x1b\[[0-9;]*m)*: ", 120)
             shell(
                 'echo "ZRAM_COW=$(findmnt -no SOURCE,FSTYPE /run/archiso/cowspace)'
                 ' ROOT=$(findmnt -no FSTYPE /)"',
