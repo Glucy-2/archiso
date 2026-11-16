@@ -6,6 +6,8 @@ hyperv
 linux
 linux-firmware
 linux-firmware-mellanox
+linux-firmware-marvell
+sof-firmware
 intel-ucode
 amd-ucode
 hwdata
