@@ -7,7 +7,6 @@ iso_publisher="Glucy2 <i@glucy2.com>"
 iso_application="Arch Linux Glucy2 standard image"
 iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
-buildmodes=('iso')
 bootmodes=('bios.syslinux'
            'uefi.grub')
 pacman_conf="pacman.conf"
