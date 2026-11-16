@@ -41,6 +41,9 @@ Both profiles share the same defaults (set in each profile's `airootfs/etc/`):
 - `root` has an empty password.
 - NetworkManager enabled; `systemd-networkd` disabled to avoid conflicts. `NetworkManager-wait-online` is not enabled.
 - Hostname equals the profile name (`glucy2-standard` / `glucy2-gpu`) via `/etc/hostname`.
+- `pacman-init.service` initializes the pacman keyring on boot (`/etc/pacman.d/gnupg` is a tmpfs); `/etc/pacman.d/mirrorlist` is a copy of the build host's mirrorlist.
+- journald uses volatile storage; suspend/hibernate keys and lid switch are ignored.
+- Boot menus: default (archiso `copytoram=auto`), forced copy to RAM, forced run from boot media, Memtest86+, UEFI shell/firmware settings.
 
 Keep the two profiles' copies in sync when changing these.
 
