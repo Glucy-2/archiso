@@ -24,6 +24,9 @@ pv
 qemu-guest-agent
 syslinux
 virtualbox-guest-utils-nox
+memtest86+
+memtest86+-efi
+edk2-shell
 
 dmidecode
 util-linux
