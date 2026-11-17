@@ -48,6 +48,7 @@ fastfetch
 starship
 tmux
 bash-completion
+carapace
 
 btop
 htop
