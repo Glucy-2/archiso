@@ -47,6 +47,7 @@ partclone
 fastfetch
 starship
 tmux
+zellij
 bash-completion
 carapace
 
