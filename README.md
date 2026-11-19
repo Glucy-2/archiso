@@ -37,7 +37,7 @@ Limitation: only official-repo dependencies are resolved; AUR dependencies of AU
 Both profiles share the same defaults (set in each profile's `airootfs/etc/`):
 
 - User `live` (UID 1000, `wheel`), password `live`, passwordless sudo (`sudoers.d/live`).
-- Auto-login as `live` on all virtual consoles tty1–tty6 (`getty@.service.d` drop-in); serial consoles are unaffected.
+- Auto-login as `live` on all virtual consoles tty1–tty6 (`getty@.service.d` drop-in) and on serial consoles (`serial-getty@.service.d` drop-in; only started when `console=ttyS*` is on the kernel command line).
 - `root` has an empty password.
 - NetworkManager enabled; `systemd-networkd` disabled to avoid conflicts. `NetworkManager-wait-online` is not enabled.
 - Hostname equals the profile name (`glucy2-standard` / `glucy2-gpu`) via `/etc/hostname`.
