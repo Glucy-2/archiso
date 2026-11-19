@@ -7,8 +7,7 @@ The kernel, initramfs and kernel command line are taken from the ISO itself
 (boot/grub/grub.cfg), booted directly with `-kernel` so the serial console can
 be enabled. Checks:
   * initramfs sets up the zram-backed cowspace and mounts it
-  * the system reaches the serial login prompt
-  * login as live/live works and the motd (fastfetch) is printed
+  * the serial console autologins as live and the motd (fastfetch) is printed
   * root is an overlay and /run/archiso/cowspace is ext4 on /dev/zram0
 
 Requires: qemu-system-x86_64, bsdtar (libarchive), python3-pexpect.
@@ -111,12 +110,9 @@ def main():
         try:
             wait(r"Formatting /dev/zram0")
             wait(r"Device '/dev/zram0' mounted successfully")
-            wait(r"login: ")
-            child.sendline("live")
-            wait(r"Password: ", 60)
-            child.sendline("live")
+            # The serial getty autologins as live: no login/password prompts.
             # fastfetch output from /etc/profile.d/motd.sh; labels are colored ("Kernel\e[m: ").
-            wait(r"Kernel(?:\x1b\[[0-9;]*m)*: ", 120)
+            wait(r"Kernel(?:\x1b\[[0-9;]*m)*: ")
             shell(
                 'echo "ZRAM_COW=$(findmnt -no SOURCE,FSTYPE /run/archiso/cowspace)'
                 ' ROOT=$(findmnt -no FSTYPE /)"',
